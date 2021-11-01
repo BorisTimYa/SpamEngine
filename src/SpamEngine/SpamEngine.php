@@ -54,8 +54,8 @@ class SpamEngine
     public function prepareData()
     {
         $hours = (int)date('H');
-        if (($hours > 22) || ($hours < 10)) {
-            $this->errors[] = 'Not worke time';
+        if (($hours > $this->config['workHours']['to']) || ($hours < $this->config['workHours']['from'])) {
+            $this->errors[] = 'Not work time';
 
             return;
         }

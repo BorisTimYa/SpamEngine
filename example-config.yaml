@@ -8,6 +8,10 @@ reportMail: pavlova@saytum.ru
 
 fromMail: user@gmail.com
 
+workHours:
+  from: 19
+  to: 22
+
 data: users.php
 
 min_age: 18
