@@ -96,7 +96,12 @@ class SpamEngine
 
     public function letSpam()
     {
+        $hours = (int)date('H');
+        if (($hours > 22) || ($hours < 10)) {
+            $this->errors[] = 'Not worke time';
 
+            return;
+        }
         $this->mailer->Subject = $this->config['subject'];
 
         foreach ($this->spam_data as $data) {
