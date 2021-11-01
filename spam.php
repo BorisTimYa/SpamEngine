@@ -1,7 +1,15 @@
 <?php
 
+define('PROJECT_ROOT', realpath(__DIR__).'/');
+
+require_once PROJECT_ROOT.'vendor/autoload.php';
+
 use SpamEngine\SpamEngine\SpamEngine;
 
-require_once __DIR__.'/vendor/autoload.php';
+$spam = new SpamEngine();
 
-$e = new SpamEngine();
+$spam->prepareData();
+
+$spam->letSpam();
+
+$spam->sendReport();
