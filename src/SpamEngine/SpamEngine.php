@@ -23,7 +23,7 @@ class SpamEngine
 
     const SMTP_ERROR = 'Mail send error: %s';
 
-    private array $succes;
+    private array $success;
 
     private PHPMailer $mailer;
 
@@ -53,6 +53,13 @@ class SpamEngine
 
     public function prepareData()
     {
+        $hours = (int)date('H');
+        if (($hours > 22) || ($hours < 10)) {
+            $this->errors[] = 'Not worke time';
+
+            return;
+        }
+
         $users = [];
         $file = PROJECT_ROOT.$this->config['data'];
         if (file_exists($file)) {
@@ -96,12 +103,6 @@ class SpamEngine
 
     public function letSpam()
     {
-        $hours = (int)date('H');
-        if (($hours > 22) || ($hours < 10)) {
-            $this->errors[] = 'Not worke time';
-
-            return;
-        }
         $this->mailer->Subject = $this->config['subject'];
 
         foreach ($this->spam_data as $data) {
@@ -113,7 +114,7 @@ class SpamEngine
                     $this->errors[] = sprintf(self::SMTP_ERROR, $this->mailer->ErrorInfo);
                     $this->mailer->ErrorInfo = '';
                 } else {
-                    $this->succes[] = [$data['email'], $data['name']];
+                    $this->success[] = [$data['email'], $data['name']];
                 }
             } catch (Exception $exception) {
                 $this->errors[] = sprintf(self::SMTP_ERROR, $exception->getMessage());
@@ -124,7 +125,7 @@ class SpamEngine
     public function sendReport()
     {
         $this->mailer->Subject = 'Sending report';
-        $msg = '<div>Sent succes: '.count($this->succes).'</div><hr>';
+        $msg = '<div>Sent success: '.count($this->success).'</div><hr>';
         $msg .= 'Errors: <ul>'.implode('<li>', $this->errors).'</ul>';
         $this->mailer->msgHTML($msg);
         $this->mailer->clearAddresses();
