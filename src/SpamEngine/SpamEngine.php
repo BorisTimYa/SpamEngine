@@ -31,7 +31,7 @@ class SpamEngine
 
     private array $errors;
 
-    private array $spam_data;
+    private array $spam_data = [];
 
     function __construct()
     {
