@@ -36,6 +36,19 @@ class SpamEngine
     function __construct()
     {
         $this->config = Yaml::parseFile(PROJECT_ROOT.'config.yaml');
+        $this->mailer = new PHPMailer();
+        $this->mailer->CharSet = 'UTF-8';
+        $this->mailer->isSMTP();
+        $this->mailer->SMTPAuth = true;
+        $this->mailer->SMTPDebug = 1;
+        $this->mailer->Host = $this->config['smtp']['host'];
+        $this->mailer->Port = $this->config['smtp']['port'];
+        $this->mailer->Username = $this->config['smtp']['user'];
+        $this->mailer->Password = $this->config['smtp']['pass'];
+        $this->mailer->SMTPOptions = [
+          'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true,],
+        ];
+        $this->mailer->setFrom($this->config['fromMail']);
     }
 
     public function prepareData()
@@ -83,19 +96,7 @@ class SpamEngine
 
     public function letSpam()
     {
-        $this->mailer = new PHPMailer();
-        $this->mailer->CharSet = 'UTF-8';
-        $this->mailer->isSMTP();
-        $this->mailer->SMTPAuth = true;
-        $this->mailer->SMTPDebug = 1;
-        $this->mailer->Host = $this->config['smtp']['host'];
-        $this->mailer->Port = $this->config['smtp']['port'];
-        $this->mailer->Username = $this->config['smtp']['user'];
-        $this->mailer->Password = $this->config['smtp']['pass'];
-        $this->mailer->SMTPOptions = [
-          'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true,],
-        ];
-        $this->mailer->setFrom($this->config['fromMail']);
+
         $this->mailer->Subject = $this->config['subject'];
 
         foreach ($this->spam_data as $data) {
