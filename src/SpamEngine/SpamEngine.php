@@ -23,6 +23,8 @@ class SpamEngine
 
     const SMTP_ERROR = 'Mail send error: %s';
 
+    const NOT_WORk = 'Not work time %d';
+
     private array $success;
 
     private PHPMailer $mailer;
@@ -31,7 +33,7 @@ class SpamEngine
 
     private array $errors;
 
-    private array $spam_data = [];
+    private array $spam_data;
 
     function __construct()
     {
@@ -49,13 +51,15 @@ class SpamEngine
           'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true,],
         ];
         $this->mailer->setFrom($this->config['fromMail']);
+        $this->spam_data = $this->success = [];
     }
 
     public function prepareData()
     {
+        $this->spam_data = [];
         $hours = (int)date('H');
-        if (($hours > $this->config['workHours']['to']) || ($hours < $this->config['workHours']['from'])) {
-            $this->errors[] = 'Not work time';
+        if (($hours >= $this->config['workHours']['to']) || ($hours < $this->config['workHours']['from'])) {
+            $this->errors[] = sprintf(self::NOT_WORk, $hours);
 
             return;
         }
@@ -104,7 +108,7 @@ class SpamEngine
     public function letSpam()
     {
         $this->mailer->Subject = $this->config['subject'];
-
+        $this->success = [];
         foreach ($this->spam_data as $data) {
             $this->mailer->clearAddresses();
             $this->mailer->addAddress($data['email'], $data['name']);
