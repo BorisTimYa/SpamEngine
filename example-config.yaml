@@ -1,0 +1,7 @@
+smtp:
+  host: ssl://smtp.gmail.com
+  user: username
+  pass: password
+  port: 465
+
+data: users.php
