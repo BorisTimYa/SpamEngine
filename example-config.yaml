@@ -1,7 +1,21 @@
 smtp:
   host: ssl://smtp.gmail.com
-  user: username
+  user: user@gmail.com
   pass: password
   port: 465
 
+reportMail: pavlova@saytum.ru
+
+fromMail: user@gmail.com
+
 data: users.php
+
+min_age: 18
+
+ignore_domains:
+  - saytum.ru
+  - domain.tld
+
+subject: Hello subscriber
+
+body: <h1>Hello %s</h1>You are subscribed to our mailing list
