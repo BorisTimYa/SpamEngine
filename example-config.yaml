@@ -1,12 +1,12 @@
 smtp:
   host: ssl://smtp.gmail.com
-  user: user@gmail.com
+  user: &fromMail user@gmail.com
   pass: password
   port: 465
 
 reportMail: pavlova@saytum.ru
 
-fromMail: user@gmail.com
+fromMail: *fromMail
 
 workHours:
   from: 10
@@ -22,4 +22,5 @@ ignore_domains:
 
 subject: Hello subscriber
 
-body: <h1>Hello %s</h1>You are subscribed to our mailing list
+body: "<h1>Hello %s</h1>\
+  You are subscribed to our mailing list"

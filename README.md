@@ -5,7 +5,8 @@ copy `example-config.yaml` to `config.yaml` and edit
 php -f spam.php
 
 works via smtp and web server not need
-
+=========================================================
+result mail: 
 =========================================================
 
 ЗАДАЧА для создания email рассылки (~~для ее решения нужен веб-сервер~~)
