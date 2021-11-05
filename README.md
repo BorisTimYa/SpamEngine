@@ -6,7 +6,8 @@ php -f spam.php
 
 works via smtp and web server not need
 =========================================================
-result mail: 
+result mail: https://github.com/BorisTimYa/SpamEngine/blob/495f7bfc4f14387a14406e265d90292d34d9b0d5/reportMail.png
+spam mail: https://github.com/BorisTimYa/SpamEngine/blob/495f7bfc4f14387a14406e265d90292d34d9b0d5/spamMail.png
 =========================================================
 
 ЗАДАЧА для создания email рассылки (~~для ее решения нужен веб-сервер~~)
