@@ -19,6 +19,6 @@ class Messages
 
     const SMTP_ERROR = 'Mail send error: %s';
 
-    const NOT_WORk = 'Not work time %d';
+    const NOT_WORK = 'Not work time %d';
 
 }

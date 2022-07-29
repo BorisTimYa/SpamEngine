@@ -29,14 +29,12 @@ class SpamEngine
         $this->mailer->CharSet = 'UTF-8';
         $this->mailer->isSMTP();
         $this->mailer->SMTPAuth = true;
-        $this->mailer->SMTPDebug = 1;
+        $this->mailer->SMTPDebug = 0;
         $this->mailer->Host = $this->config['smtp']['host'];
         $this->mailer->Port = $this->config['smtp']['port'];
         $this->mailer->Username = $this->config['smtp']['user'];
         $this->mailer->Password = $this->config['smtp']['pass'];
-        $this->mailer->SMTPOptions = [
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true,],
-        ];
+        $this->mailer->SMTPOptions = ['ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true,],];
         $this->mailer->setFrom($this->config['fromMail']);
         $this->spam_data = $this->success = [];
     }
@@ -46,7 +44,7 @@ class SpamEngine
         $this->spam_data = [];
         $hours = (int)date('H');
         if (($hours >= $this->config['workHours']['to']) || ($hours < $this->config['workHours']['from'])) {
-            $this->errors[] = sprintf(Messages::NOT_WORk, $hours);
+            $this->errors[] = sprintf(Messages::NOT_WORK, $hours);
 
             return;
         }
@@ -60,6 +58,7 @@ class SpamEngine
 
             return;
         }
+
         $_users = [];
         foreach ($users as $k => $v) {
             if (!array_key_exists('email', $v)) {
