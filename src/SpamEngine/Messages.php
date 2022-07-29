@@ -4,6 +4,7 @@ namespace SpamEngine\SpamEngine;
 
 class Messages
 {
+
     const INVALID_EMAIL = 'Invalid email %s';
 
     const  INVALID_DOMAIN = 'Invalid domain %s';

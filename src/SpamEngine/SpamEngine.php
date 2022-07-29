@@ -24,7 +24,7 @@ class SpamEngine
      */
     function __construct()
     {
-        $this->config = Yaml::parseFile(PROJECT_ROOT.'config.yaml');
+        $this->config = Yaml::parseFile(PROJECT_ROOT . 'config.yaml');
         $this->mailer = new PHPMailer();
         $this->mailer->CharSet = 'UTF-8';
         $this->mailer->isSMTP();
@@ -35,7 +35,7 @@ class SpamEngine
         $this->mailer->Username = $this->config['smtp']['user'];
         $this->mailer->Password = $this->config['smtp']['pass'];
         $this->mailer->SMTPOptions = [
-          'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true,],
+            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true,],
         ];
         $this->mailer->setFrom($this->config['fromMail']);
         $this->spam_data = $this->success = [];
@@ -52,7 +52,7 @@ class SpamEngine
         }
 
         $users = [];
-        $file = PROJECT_ROOT.$this->config['data'];
+        $file = PROJECT_ROOT . $this->config['data'];
         if (file_exists($file)) {
             require_once $file;
         } else {
@@ -86,7 +86,7 @@ class SpamEngine
                 $this->errors[] = sprintf(Messages::INVALID_DOMAIN, "$v[name]: $v[email]");
                 continue;
             }
-            $_users[$v['date_registration'].'_'.$k] = $v;
+            $_users[$v['date_registration'] . '_' . $k] = $v;
         }
         ksort($_users);
         $this->spam_data = $_users;
@@ -122,8 +122,8 @@ class SpamEngine
     public function sendReport()
     {
         $this->mailer->Subject = 'Sending report';
-        $msg = '<div>Sent success: '.count($this->success).'</div><hr>';
-        $msg .= 'Errors: <ul>'.implode('<li>', $this->errors).'</ul>';
+        $msg = '<div>Sent success: ' . count($this->success) . '</div><hr>';
+        $msg .= 'Errors: <ul>' . implode('<li>', $this->errors) . '</ul>';
         $this->mailer->msgHTML($msg);
         $this->mailer->clearAddresses();
         $this->mailer->addAddress($this->config['reportMail']);
