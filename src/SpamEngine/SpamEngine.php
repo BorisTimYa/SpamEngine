@@ -9,22 +9,6 @@ use Symfony\Component\Yaml\Yaml;
 class SpamEngine
 {
 
-    const INVALID_EMAIL = 'Invalid email %s';
-
-    const  INVALID_DOMAIN = 'Invalid domain %s';
-
-    const DISABLED_DOMAIN = 'Disabled domain %s';
-
-    const DISABLED_SPAM = 'Spam disabled %s';
-
-    const TO_YOUNG = 'User to young %s';
-
-    const DATA_ERROR = 'Data file not found %s';
-
-    const SMTP_ERROR = 'Mail send error: %s';
-
-    const NOT_WORk = 'Not work time %d';
-
     private array $success;
 
     private PHPMailer $mailer;
@@ -35,6 +19,9 @@ class SpamEngine
 
     private array $spam_data;
 
+    /**
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
     function __construct()
     {
         $this->config = Yaml::parseFile(PROJECT_ROOT.'config.yaml');
@@ -59,7 +46,7 @@ class SpamEngine
         $this->spam_data = [];
         $hours = (int)date('H');
         if (($hours >= $this->config['workHours']['to']) || ($hours < $this->config['workHours']['from'])) {
-            $this->errors[] = sprintf(self::NOT_WORk, $hours);
+            $this->errors[] = sprintf(Messages::NOT_WORk, $hours);
 
             return;
         }
@@ -69,7 +56,7 @@ class SpamEngine
         if (file_exists($file)) {
             require_once $file;
         } else {
-            $this->errors[] = sprintf(self::DATA_ERROR, $file);
+            $this->errors[] = sprintf(Messages::DATA_ERROR, $file);
 
             return;
         }
@@ -79,24 +66,24 @@ class SpamEngine
                 continue;
             }
             if (!filter_var($v['email'], FILTER_VALIDATE_EMAIL)) {
-                $this->errors[] = sprintf(self::INVALID_EMAIL, "$v[name]: $v[email]");
+                $this->errors[] = sprintf(Messages::INVALID_EMAIL, "$v[name]: $v[email]");
                 continue;
             }
             [, $domain] = explode('@', $v['email']);
             if (in_array($domain, $this->config['ignore_domains'])) {
-                $this->errors[] = sprintf(self::DISABLED_DOMAIN, "$v[name]: $v[email]");
+                $this->errors[] = sprintf(Messages::DISABLED_DOMAIN, "$v[name]: $v[email]");
                 continue;
             }
             if ($v['spam_disable']) {
-                $this->errors[] = sprintf(self::DISABLED_SPAM, "$v[name]: $v[email]");
+                $this->errors[] = sprintf(Messages::DISABLED_SPAM, "$v[name]: $v[email]");
                 continue;
             }
             if ($v['age'] < $this->config['min_age']) {
-                $this->errors[] = sprintf(self::TO_YOUNG, "$v[name]: $v[email]");
+                $this->errors[] = sprintf(Messages::TO_YOUNG, "$v[name]: $v[email]");
                 continue;
             }
-            if (!checkdnsrr($domain, 'MX')) {
-                $this->errors[] = sprintf(self::INVALID_DOMAIN, "$v[name]: $v[email]");
+            if (!checkdnsrr($domain)) {
+                $this->errors[] = sprintf(Messages::INVALID_DOMAIN, "$v[name]: $v[email]");
                 continue;
             }
             $_users[$v['date_registration'].'_'.$k] = $v;
@@ -105,6 +92,9 @@ class SpamEngine
         $this->spam_data = $_users;
     }
 
+    /**
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
     public function letSpam()
     {
         $this->mailer->Subject = $this->config['subject'];
@@ -115,17 +105,20 @@ class SpamEngine
             $this->mailer->msgHTML(sprintf($this->config['body'], $data['name']));
             try {
                 if (!$this->mailer->send()) {
-                    $this->errors[] = sprintf(self::SMTP_ERROR, $this->mailer->ErrorInfo);
+                    $this->errors[] = sprintf(Messages::SMTP_ERROR, $this->mailer->ErrorInfo);
                     $this->mailer->ErrorInfo = '';
                 } else {
                     $this->success[] = [$data['email'], $data['name']];
                 }
             } catch (Exception $exception) {
-                $this->errors[] = sprintf(self::SMTP_ERROR, $exception->getMessage());
+                $this->errors[] = sprintf(Messages::SMTP_ERROR, $exception->getMessage());
             }
         }
     }
 
+    /**
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
     public function sendReport()
     {
         $this->mailer->Subject = 'Sending report';
